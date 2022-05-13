@@ -1,0 +1,21 @@
+{
+  "name": "karura-vaults-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -b"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@types/node": "^17.0.32",
+    "axios": "^0.27.2",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0"
+  }
+}
