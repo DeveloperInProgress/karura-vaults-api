@@ -2,8 +2,8 @@ import { exitCode } from "process";
 
 export interface Position {
     id: string;
-    ownerid: string;
-    collateralid: string;
+    ownerId: string;
+    collateralId: string;
     txCount: number;
     depositAmount: bigint;
     debitAmount: bigint;

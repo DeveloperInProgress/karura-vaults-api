@@ -86,7 +86,7 @@ f
     ):  Promise<Collateral[]> {
         const query = `
         query {
-            collaterals(filter:{id:{equalTo: ${id}}})  {
+            collaterals(filter:{id:{equalTo: "${id}"}})  {
                 nodes {
                    id
                   name
@@ -115,7 +115,7 @@ f
     ) {
         const query = `
         query {
-            collateralParams(filter:{id:{equalTo: ${id}}})  {
+            collateralParams(filter:{id:{equalTo: "${id}"}})  {
                 nodes {
                    id
                   collateralId
@@ -140,7 +140,7 @@ f
             }
         )
 
-        return data.data.colleteralParams.nodes;
+        return data.data.collateralParams.nodes;
     }
 
     async ownerById(
@@ -148,7 +148,7 @@ f
     ) {
         const query = `
         query {
-            accounts(filter:{id:{equalTo: ${id}}})  {
+            accounts(filter:{id:{equalTo: "${id}"}})  {
                 nodes {
                    id
                   address
@@ -215,7 +215,6 @@ f
             }
         }
         `
-
         const {data} = await this.connection.get(
             '/',
             {
