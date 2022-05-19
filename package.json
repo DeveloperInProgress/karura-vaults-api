@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b"
   },
-  "author": "",
+  "author": "Naveen Veluswamy",
   "license": "ISC",
   "devDependencies": {
     "typescript": "^4.6.4"
