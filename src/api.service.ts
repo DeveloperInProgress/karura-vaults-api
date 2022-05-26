@@ -21,7 +21,7 @@ export class KaruraVaultsApi {
             }
         })
     }
-f
+
     async getPositions(): Promise<Position[]> {
         const query = `
         query {
@@ -195,7 +195,7 @@ f
     async hourlyPositions(timestamp: Date): Promise<HourlyPositions[]> {
         const query = `
         query {
-            hourlyPositions(filter: {timestamp: {equalTo:  ${timestamp}}})  {
+            hourlyPositions(filter: {timestamp: {equalTo: "${timestamp}"}})  {
                 nodes {
                 id
                   ownerId
@@ -215,6 +215,7 @@ f
             }
         }
         `
+        console.log(query)
         const {data} = await this.connection.get(
             '/',
             {

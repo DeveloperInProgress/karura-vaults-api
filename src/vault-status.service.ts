@@ -3,16 +3,20 @@ import { KaruraVaultsApi } from "./api.service";
 import { Collateral, CollateralParams, Position } from "./types";
 import { getCollateralRatio } from "./utils";
 import { delay } from "./utils";
-
+import { EventEmitter } from "events"
+;
 export class VaultStatusService {
     private api: KaruraVaultsApi;
-    private yellowZonedPositions: Record<string, Position> = {};
-    private redZonedPositions: Record<string, Position> = {};
+    private yellowZonedPositions: Record<string, Position | undefined> = {};
+    private redZonedPositions: Record<string, Position | undefined> = {};
     private latestUpdatedHour: Date;
+    updatesEmitter: EventEmitter;
     constructor(
         api: KaruraVaultsApi
     ) {
         this.api = api;
+        this.latestUpdatedHour = new Date();
+        this.updatesEmitter = new EventEmitter();
     }
 
     async init() {
@@ -23,6 +27,7 @@ export class VaultStatusService {
         console.log('checking liquidation status...');
         await this.checkPositions(positions);
         console.log('liquidation status check done!')
+        this.updatesEmitter.emit('positions initialized')
     }
 
     async start() {
@@ -34,6 +39,7 @@ export class VaultStatusService {
             this.checkPositions(positions);
             console.log('liquidation status check done!')
             console.log('entering sleep until next hourly update...')
+            this.updatesEmitter.emit('position updated');
             delay(3600);
         }
     }
@@ -106,5 +112,13 @@ export class VaultStatusService {
                 return await this.api.getPositionById(pid);
             })
         );
+    }
+
+    get yellowZoned() {
+        return this.yellowZonedPositions;
+    }
+
+    get redZoned() {
+        return this.redZonedPositions;
     }
 }
