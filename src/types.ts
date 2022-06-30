@@ -5,7 +5,7 @@ export interface Position {
     ownerId: string;
     collateralId: string;
     txCount: number;
-    depositAmount: bigint;
+    collateralAmount: bigint;
     debitAmount: bigint;
     updateAt: Date;
     updateAtBlockId: string;
@@ -14,7 +14,8 @@ export interface Position {
 export interface Collateral {
     id: string;
     name: string;
-    decimals: number;
+    decimal: number;
+    price: bigint;
     depositAmount: bigint;
     debitAmount: bigint;
     txCount: number;

@@ -5,17 +5,24 @@ import { Collateral, HourlyPositions, Position } from './types';
 import { time } from 'console';
 
 export class KaruraVaultsApi {
-    connection: AxiosInstance;
-    constructor(
-        endpoint: string
-    ) {
+    loanconnection: AxiosInstance;
+    karuraconnection: AxiosInstance;
+    constructor() {
         const httpAgent = new http.Agent({ keepAlive: true });
         const httpsAgent = new https.Agent({ keepAlive: true });
         
-        this.connection = axios.create({
+        this.loanconnection = axios.create({
             httpAgent,
             httpsAgent,
-            baseURL: endpoint,
+            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/karura-loan',
+            headers: {
+                Accept: 'application/json'
+            }
+        })
+        this.karuraconnection = axios.create({
+            httpAgent,
+            httpsAgent,
+            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/karura',
             headers: {
                 Accept: 'application/json'
             }
@@ -23,53 +30,58 @@ export class KaruraVaultsApi {
     }
 
     async getPositions(): Promise<Position[]> {
-        const query = `
-        query {
-            positions  {
-                nodes {
-                    id
-                    ownerId
-                    collateralId
-                    txCount
-                    depositAmount
-                    debitAmount
-                    updateAt
-                    updateAtBlockId
+        let i = 0;
+        const positions: Position[] = [];
+        while(true) {
+            const query = `
+            query {
+                loanPositions(offset: ${i})  {
+                    nodes {
+                        id
+                        ownerId
+                        collateralId
+                        collateralAmount
+                        debitAmount
+                    }
                 }
             }
-        }
-        `
-        const {data} = await this.connection.get(
-            '/',
-            {
-                params: {
-                    query: query
+            `
+            const {data} = await this.karuraconnection.get(
+                '/',
+                {
+                    params: {
+                        query: query
+                    }
                 }
-            }
-        )
+            )
 
-        return data.data.positions.nodes;
+            if(data.data.loanPositions.nodes.length === 0) {
+                break;
+            }
+
+            positions.push(...data.data.loanPositions.nodes);
+            i += 100;
+        }
+
+        return positions;
     }    
 
     async getPositionById(id: string): Promise<Position> {
         const query = `
         query {
-            positions(filter:{id:{equalTo: ${id}}}) {
+            loanPositions(filter:{id:{equalTo: "${id}"}}) {
                 nodes {
                     id
                     ownerId
                     collateralId
-                    txCount
-                    depositAmount
+                    collateralAmount
                     debitAmount
-                    updateAt
-                    updateAtBlockId
                 }
             }
         }
         `
 
-        const {data} = await this.connection.get(
+        const {data} = await this.karuraconnection.get(
             '/',
             {
                 params: {
@@ -78,27 +90,53 @@ export class KaruraVaultsApi {
             }
         )
 
-        return data.data.positions.nodes[0];
+        return data.data.loanPositions.nodes[0];
+    }
+
+    async getPositionsByOwnerId(id: string): Promise<Position[]> {
+        const query = `
+        query {
+            loanPositions(filter:{ownerId:{equalTo: "${id}"}}) {
+                nodes {
+                    id
+                    ownerId
+                    collateralId
+                    collateralAmount
+                    debitAmount
+                }
+            }
+        }
+        `
+
+        const {data} = await this.karuraconnection.get(
+            '/',
+            {
+                params: {
+                    query: query
+                }
+            }
+        )
+
+        return data.data.loanPositions.nodes;
     }
 
     async collateralById(
         id: string
-    ):  Promise<Collateral[]> {
+    ):  Promise<Collateral> {
         const query = `
         query {
-            collaterals(filter:{id:{equalTo: "${id}"}})  {
+            tokens(filter:{id:{equalTo: "${id}"}})  {
                 nodes {
                    id
                   name
-                  decimals
-                  depositAmount
-                  debitAmount
+                  decimal
+                  price
                 }
             }
         }
         `
 
-        const {data} = await this.connection.get(
+        const {data} = await this.karuraconnection.get(
             '/',
             {
                 params: {
@@ -107,7 +145,7 @@ export class KaruraVaultsApi {
             }
         )
 
-        return data.data.collaterals.nodes;
+        return data.data.tokens.nodes[0];
     }
 
     async collateralParamsById(
@@ -115,7 +153,7 @@ export class KaruraVaultsApi {
     ) {
         const query = `
         query {
-            collateralParams(filter:{id:{equalTo: "${id}"}})  {
+            loanParams(filter:{collateralId:{equalTo: "${id}"}})  {
                 nodes {
                    id
                   collateralId
@@ -124,14 +162,12 @@ export class KaruraVaultsApi {
                   liquidationRatio
                   liquidationPenalty
                   requiredCollateralRatio
-                  updateAt
-                  updateAtBlockId
                 }
             }
         }
         `
 
-        const {data} = await this.connection.get(
+        const {data} = await this.karuraconnection.get(
             '/',
             {
                 params: {
@@ -140,7 +176,7 @@ export class KaruraVaultsApi {
             }
         )
 
-        return data.data.collateralParams.nodes;
+        return data.data.loanParams.nodes[0];
     }
 
     async ownerById(
@@ -157,7 +193,7 @@ export class KaruraVaultsApi {
             }
         }
         `
-        const {data} = await this.connection.get(
+        const {data} = await this.karuraconnection.get(
             '/',
             {
                 params: {
@@ -180,7 +216,7 @@ export class KaruraVaultsApi {
         }
         `
 
-        const {data} = await this.connection.get(
+        const {data} = await this.loanconnection.get(
             '/',
             {
                 params: {
@@ -216,7 +252,7 @@ export class KaruraVaultsApi {
         }
         `
         console.log(query)
-        const {data} = await this.connection.get(
+        const {data} = await this.loanconnection.get(
             '/',
             {
                 params: {
