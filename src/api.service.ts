@@ -231,22 +231,13 @@ export class KaruraVaultsApi {
     async hourlyPositions(timestamp: Date): Promise<HourlyPositions[]> {
         const query = `
         query {
-            hourlyPositions(filter: {timestamp: {equalTo: "${timestamp}"}})  {
+            hourlyPositions(filter: {timestamp: {equalTo: "2022-07-01T09:00:00"}})  {
                 nodes {
-                id
-                  ownerId
-                  collateralId
-                  depositAmount
-                  debitAmount
-                  depositVolumeUSD
-                  debitVolumeUSD
-                  depositChanged
-                  debitChanged
-                  depositChangedUSD
-                  debitChangedUSD
-                  debitExchangeRate
-                  timestamp
-                  txCount
+                    id
+                    ownerId
+                    collateralId
+                    depositAmount
+                    debitAmount
                 }
             }
         }

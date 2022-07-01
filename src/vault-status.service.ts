@@ -4,7 +4,7 @@ import { Collateral, CollateralParams, Position } from "./types";
 import { delay } from "./utils";
 import { EventEmitter } from "events"
 ;
-export class VaultStatusService {
+export class KaruraVaultStatusService {
     private api: KaruraVaultsApi;
     private yellowZonedPositions: Record<string, Position | undefined> = {};
     private redZonedPositions: Record<string, Position | undefined> = {};
@@ -112,8 +112,9 @@ export class VaultStatusService {
         const hourlyPositions = await this.api.hourlyPositions(currentHourOfUpdate);
         const positionIds = hourlyPositions.map((p)=>{
             const pidSplit = p.id.split('-');
-            return `${pidSplit[0]}-${pidSplit[1]}`
+            return `${pidSplit[1]}-${pidSplit[0]}`
         })
+
         console.log('fetching latest positions data...')
         return Promise.all(
             positionIds.map(async (pid) => {
