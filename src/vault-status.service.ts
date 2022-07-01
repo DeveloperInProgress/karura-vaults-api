@@ -1,11 +1,11 @@
 import { appendFile } from "fs";
-import { KaruraVaultsApi } from "./api.service";
+import { AcalaVaultsApi } from "./api.service";
 import { Collateral, CollateralParams, Position } from "./types";
 import { delay } from "./utils";
 import { EventEmitter } from "events"
 ;
-export class VaultStatusService {
-    private api: KaruraVaultsApi;
+export class AcalaVaultStatusService {
+    private api: AcalaVaultsApi;
     private yellowZonedPositions: Record<string, Position | undefined> = {};
     private redZonedPositions: Record<string, Position | undefined> = {};
     private latestUpdatedHour: Date;
@@ -13,7 +13,7 @@ export class VaultStatusService {
     private collateralCache: Record<string, Collateral> = {};
     updatesEmitter: EventEmitter;
     constructor(
-        api: KaruraVaultsApi
+        api: AcalaVaultsApi
     ) {
         this.api = api;
         this.latestUpdatedHour = new Date();
@@ -112,7 +112,7 @@ export class VaultStatusService {
         const hourlyPositions = await this.api.hourlyPositions(currentHourOfUpdate);
         const positionIds = hourlyPositions.map((p)=>{
             const pidSplit = p.id.split('-');
-            return `${pidSplit[0]}-${pidSplit[1]}`
+            return `${pidSplit[1]}-${pidSplit[0]}`
         })
         console.log('fetching latest positions data...')
         return Promise.all(

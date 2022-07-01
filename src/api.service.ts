@@ -4,9 +4,9 @@ import axios, {AxiosInstance} from 'axios';
 import { Collateral, HourlyPositions, Position } from './types';
 import { time } from 'console';
 
-export class KaruraVaultsApi {
+export class AcalaVaultsApi {
     loanconnection: AxiosInstance;
-    karuraconnection: AxiosInstance;
+    acalaconnection: AxiosInstance;
     constructor() {
         const httpAgent = new http.Agent({ keepAlive: true });
         const httpsAgent = new https.Agent({ keepAlive: true });
@@ -14,15 +14,15 @@ export class KaruraVaultsApi {
         this.loanconnection = axios.create({
             httpAgent,
             httpsAgent,
-            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/karura-loan',
+            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/acala-loans',
             headers: {
                 Accept: 'application/json'
             }
         })
-        this.karuraconnection = axios.create({
+        this.acalaconnection = axios.create({
             httpAgent,
             httpsAgent,
-            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/karura',
+            baseURL: 'https://api.subquery.network/sq/AcalaNetwork/acala',
             headers: {
                 Accept: 'application/json'
             }
@@ -46,7 +46,7 @@ export class KaruraVaultsApi {
                 }
             }
             `
-            const {data} = await this.karuraconnection.get(
+            const {data} = await this.acalaconnection.get(
                 '/',
                 {
                     params: {
@@ -81,7 +81,7 @@ export class KaruraVaultsApi {
         }
         `
 
-        const {data} = await this.karuraconnection.get(
+        const {data} = await this.acalaconnection.get(
             '/',
             {
                 params: {
@@ -108,7 +108,7 @@ export class KaruraVaultsApi {
         }
         `
 
-        const {data} = await this.karuraconnection.get(
+        const {data} = await this.acalaconnection.get(
             '/',
             {
                 params: {
@@ -136,7 +136,7 @@ export class KaruraVaultsApi {
         }
         `
 
-        const {data} = await this.karuraconnection.get(
+        const {data} = await this.acalaconnection.get(
             '/',
             {
                 params: {
@@ -167,7 +167,7 @@ export class KaruraVaultsApi {
         }
         `
 
-        const {data} = await this.karuraconnection.get(
+        const {data} = await this.acalaconnection.get(
             '/',
             {
                 params: {
@@ -193,7 +193,7 @@ export class KaruraVaultsApi {
             }
         }
         `
-        const {data} = await this.karuraconnection.get(
+        const {data} = await this.acalaconnection.get(
             '/',
             {
                 params: {
