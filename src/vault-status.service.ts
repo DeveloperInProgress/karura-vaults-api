@@ -38,8 +38,13 @@ export class KaruraVaultStatusService {
     async start() {
         console.log('starting position updates listener...')
         while(true) {
+            this.collateralParamsCache = {};
+            this.collateralCache = {}
             console.log('getting latest positions...')
-            const positions = await this.getLatestPositions();
+            const positions = (await this.getLatestPositions()).filter((p)=>{
+                    return p !== undefined || p !== null
+                }
+            )
             console.log('checking liquidation status...')
             this.checkPositions(positions);
             console.log('liquidation status check done!')
@@ -104,10 +109,12 @@ export class KaruraVaultStatusService {
         if(currentHourOfUpdate <= this.latestUpdatedHour) {
             console.log(`latest updates already indexed, listening for new updates...`)
         }
+        
         while(currentHourOfUpdate <= this.latestUpdatedHour) {
             delay(10);
             currentHourOfUpdate = await this.api.getLatestHourOfUpdate();
         }
+        
         console.log('new position updates found!')
         const hourlyPositions = await this.api.hourlyPositions(currentHourOfUpdate);
         const positionIds = hourlyPositions.map((p)=>{
